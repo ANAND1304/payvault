@@ -54,7 +54,7 @@ public class PaymentOrderService {
 
         String orderRef = referenceGenerator.generateOrderReference();
         String linkToken = referenceGenerator.generatePaymentLinkToken();
-     //   String paymentLink = "http://localhost:5173/pay/" + linkToken;
+     
         String frontendUrl = System.getenv("FRONTEND_URL") != null
               ? System.getenv("FRONTEND_URL")
               : "http://localhost:5173";
