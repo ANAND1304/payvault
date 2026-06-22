@@ -28,6 +28,17 @@ api.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+// ─── Keep Render awake — pings every 14 minutes ──────────────────────
+const ping = () => fetch(`${BACKEND}/api/v1/auth/login`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ email: 'ping@ping.com', password: 'ping' })
+}).catch(() => {})
+
+if (BACKEND) {
+  ping()
+  setInterval(ping, 14 * 60 * 1000)
+}
 
 // ─── Auth ──────────────────────────────────────────────────────────
 export const authApi = {
