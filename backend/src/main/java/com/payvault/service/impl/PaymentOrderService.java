@@ -93,16 +93,19 @@ public class PaymentOrderService {
         return toResponse(order);
     }
 
-    @Transactional(readOnly = true)
-    public OrderResponse getOrderByLinkToken(String token) {
-        String paymentLink = "http://localhost:5173/pay/" + token;
-        return orderRepository.findAll().stream()
-            .filter(o -> paymentLink.equals(o.getPaymentLink()))
-            .filter(o -> o.getStatus() == OrderStatus.CREATED || o.getStatus() == OrderStatus.PROCESSING)
-            .filter(o -> o.getExpiresAt().isAfter(LocalDateTime.now()))
-            .findFirst()
-            .map(this::toResponse)
-            .orElseThrow(() -> new BusinessException("Payment link is invalid or expired", "INVALID_LINK"));
+@Transactional(readOnly = true)
+public OrderResponse getOrderByLinkToken(String token) {
+    return orderRepository.findAll().stream()
+        .filter(o -> o.getPaymentLink() != null 
+            && o.getPaymentLink().endsWith("/pay/" + token))
+        .filter(o -> o.getStatus() == OrderStatus.CREATED 
+            || o.getStatus() == OrderStatus.PROCESSING)
+        .filter(o -> o.getExpiresAt().isAfter(LocalDateTime.now()))
+        .findFirst()
+        .map(this::toResponse)
+        .orElseThrow(() -> new BusinessException(
+            "Payment link is invalid or expired", "INVALID_LINK"));
+
     }
 
     @Transactional(readOnly = true)
